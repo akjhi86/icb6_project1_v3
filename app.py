@@ -60,6 +60,15 @@ def load_data():
 
     # 지도 포인트 DataFrame
     df_map = pd.DataFrame(data["map_points"])
+    
+    # 지도 포인트에 행정동 이름 머지 (필터링용)
+    if not df_map.empty and 'dong_name' not in df_map.columns:
+        df_map = pd.merge(
+            df_map, 
+            df_dong[['dong_code', 'dong_name']], 
+            on='dong_code', 
+            how='left'
+        )
 
     # 추천 DataFrame
     df_rec = pd.DataFrame(data["recommend_top"])
@@ -267,6 +276,13 @@ with st.sidebar:
             BRANDS,
             default=BRANDS,
         )
+        all_dongs = sorted(df_dong["dong_name"].unique())
+        map_dongs = st.multiselect(
+            "📍 행정동 선택",
+            all_dongs,
+            placeholder="동 이름을 선택하세요 (미선택 시 전체)",
+            help="선택한 행정동의 매장만 지도에 표시합니다."
+        )
 
     st.divider()
     st.caption(f"행정동 {len(df_dong)}개 · 매장 {len(df_map):,}개")
@@ -456,14 +472,18 @@ if selected_tab == "📊 브랜드 개요":
         """, unsafe_allow_html=True)
 
 
+
 # ══════════════════════════════════════════════
 # 탭 2: 지도
 # ══════════════════════════════════════════════
 elif selected_tab == "🗺️ 지도":
-    st.markdown("##### 저가 커피 브랜드 매장 위치")
+    st.markdown("##### 📍 저가 커피 브랜드 매장 위치")
 
-    # 선택 브랜드 필터
+    # 필터링 (브랜드 + 행정동)
     filtered_map = df_map[df_map["brand"].isin(map_brands)] if map_brands else df_map.iloc[0:0]
+    
+    if map_dongs:
+        filtered_map = filtered_map[filtered_map["dong_name"].isin(map_dongs)]
 
     if filtered_map.empty:
         st.warning("표시할 브랜드를 사이드바에서 선택하세요.")
@@ -479,6 +499,17 @@ elif selected_tab == "🗺️ 지도":
         )
 
         import pydeck as pdk
+        
+        # 지도 중심 결정 (선택한 동이 하나라면 해당 동의 평균 위치로)
+        if map_dongs and not filtered_map.empty:
+            lat_center = filtered_map["lat"].mean()
+            lng_center = filtered_map["lng"].mean()
+            zoom_level = 13
+        else:
+            lat_center = 37.5665
+            lng_center = 126.9780
+            zoom_level = 10.5
+
         layer = pdk.Layer(
             "ScatterplotLayer",
             data=filtered_map,
@@ -488,7 +519,7 @@ elif selected_tab == "🗺️ 지도":
             pickable=True,
             auto_highlight=True,
         )
-        view = pdk.ViewState(latitude=37.5665, longitude=126.9780, zoom=10.5, pitch=0)
+        view = pdk.ViewState(latitude=lat_center, longitude=lng_center, zoom=zoom_level, pitch=0)
         tooltip = {"html": "<b>{brand}</b><br>{name}", "style": {"background": THEME["surface"], "color": THEME["text"]}}
 
         st.pydeck_chart(pdk.Deck(
