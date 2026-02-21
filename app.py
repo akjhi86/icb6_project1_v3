@@ -82,37 +82,35 @@ BRAND_COLORS = data["brand_colors"]
 BRAND_STATS  = data["brand_stats"]
 
 # ──────────────────────────────────────────────
-# 테마 설정 (사이드바 최상단)
+# 테마 및 가이드 설정
 # ──────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### 🎨 테마 설정")
-    theme_mode = st.radio("테마 선택", ["Dark", "Light"], horizontal=True, label_visibility="collapsed")
+    theme_mode = st.radio("테마 선택", ["Light", "Dark"], horizontal=True, label_visibility="collapsed")
     st.divider()
 
 is_light = (theme_mode == "Light")
 
-# 테마별 색상定義
+# 테마별 색상 정의
 THEME = {
-    "bg": "#f0f2f5" if is_light else "#0d1117",
+    "bg": "#f8f9fa" if is_light else "#0d1117",
     "surface": "#ffffff" if is_light else "#161b22",
-    "surface2": "#ffffff" if is_light else "#21262d",
-    "border": "#d0d7de" if is_light else "#30363d",
-    "text": "#111418" if is_light else "#e6edf3",
-    "text_sub": "#424a53" if is_light else "#8b949e",
+    "surface2": "#f1f3f5" if is_light else "#21262d",
+    "border": "#dee2e6" if is_light else "#30363d",
+    "text": "#212529" if is_light else "#e6edf3",
+    "text_sub": "#495057" if is_light else "#8b949e",
     "accent": "#005cc5" if is_light else "#58a6ff",
-    "shadow": "rgba(0, 0, 0, 0.05)" if is_light else "rgba(0, 0, 0, 0.4)",
+    "shadow": "rgba(0, 0, 0, 0.08)" if is_light else "rgba(0, 0, 0, 0.4)",
 }
 
-# 라이트 모드에서 형광색 시인성 확보를 위한 브랜드 색상 조정
-ADJUSTED_BRAND_COLORS = data["brand_colors"].copy()
-if is_light:
-    ADJUSTED_BRAND_COLORS = {
-        "더벤티": "#d12d2d",
-        "매머드커피": "#09a39a",
-        "메가커피": "#b18e00",
-        "빽다방": "#2e8b57",
-        "컴포즈커피": "#8a63d2",
-    }
+# 라이트 모드 시인성 확보를 위한 브랜드 색상
+ADJUSTED_BRAND_COLORS = {
+    "더벤티": "#d12d2d",
+    "매머드커피": "#09a39a",
+    "메가커피": "#b18e00",
+    "빽다방": "#2e8b57",
+    "컴포즈커피": "#8a63d2",
+} if is_light else data["brand_colors"]
 
 # ──────────────────────────────────────────────
 # 커스텀 CSS
@@ -134,17 +132,18 @@ h1, h2, h3, h4, h5, h6, p, span, label, div {{ color: {THEME["text"]}; }}
     background-image: linear-gradient(135deg, {THEME["surface"]}, {THEME["bg"]});
     border: 1px solid {THEME["border"]};
     border-radius: 12px;
-    padding: 20px 28px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px {THEME["shadow"]};
+    padding: 24px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px {THEME["shadow"]};
+    text-align: center;
 }}
 .main-header h1 {{
-    font-size: 1.6rem; font-weight: 800;
-    background: linear-gradient(90deg, {THEME["accent"]}, #bc8cff);
+    font-size: 1.8rem; font-weight: 900;
+    background: linear-gradient(90deg, {THEME["accent"]}, #8a63d2);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin: 0;
 }}
-.main-header p {{ color: {THEME["text_sub"]}; margin: 4px 0 0; font-size: .85rem; }}
+.main-header p {{ color: {THEME["text_sub"]}; margin: 8px 0 0; font-size: .9rem; font-weight: 500; }}
 
 /* 브랜드 카드 */
 .brand-card {{
@@ -170,38 +169,41 @@ h1, h2, h3, h4, h5, h6, p, span, label, div {{ color: {THEME["text"]}; }}
 
 /* 점수 설명 카드 */
 .stp-card {{
-    background: {THEME["surface2"]};
-    border-radius: 8px;
-    padding: 14px;
-    border-left: 3px solid var(--stp-color, {THEME["accent"]});
-    margin-bottom: 0;
-}}
-.stp-name  {{ font-size: .82rem; font-weight: 700; margin-bottom: 6px; }}
-.stp-formula {{
-    font-family: monospace;
-    font-size: .72rem;
     background: {THEME["surface"]};
-    border-radius: 4px;
-    padding: 6px 8px;
-    margin-bottom: 6px;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid {THEME["border"]};
+    border-left: 4px solid var(--stp-color, {THEME["accent"]});
+    box-shadow: 0 2px 8px {THEME["shadow"]};
+}}
+.stp-name  {{ font-size: .9rem; font-weight: 800; margin-bottom: 10px; }}
+.stp-formula {{
+    font-family: 'Roboto Mono', monospace;
+    font-size: .75rem;
+    font-weight: 700;
+    background: {THEME["surface2"]};
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
     line-height: 1.6;
     white-space: pre-line;
     color: {THEME["text"]};
+    border: 1px dashed {THEME["border"]};
 }}
-.stp-note {{ font-size: .68rem; color: {THEME["text_sub"]}; line-height: 1.5; }}
+.stp-note {{ font-size: .72rem; color: {THEME["text_sub"]}; line-height: 1.6; font-weight: 500; }}
 
 /* 지도 툴팁 스타일 수정 */
-.deckgl-tooltip {
+.deckgl-tooltip {{
     background: {THEME["surface"]} !important;
     color: {THEME["text"]} !important;
     border: 1px solid {THEME["border"]} !important;
     font-weight: 500;
-}
+}}
 
 /* 탭 바 텍스트 강화 */
-[data-testid="stMarkdownContainer"] p {
+[data-testid="stMarkdownContainer"] p {{
     font-weight: 500;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -241,7 +243,8 @@ with st.sidebar:
     st.divider()
 
     if selected_tab == "🏙️ 행정동 분석":
-        dong_search = st.text_input("행정동 검색", placeholder="예: 강남, 홍대...")
+        all_dongs = sorted(df_dong["dong_name"].unique())
+        dong_search = st.selectbox("🏙️ 행정동 선택", ["전체"] + all_dongs)
         brand_filter = st.selectbox("브랜드 필터", ["전체"] + BRANDS)
         sort_by = st.selectbox(
             "정렬 기준",
@@ -268,7 +271,8 @@ with st.sidebar:
                 "cost_score": "비용 점수",
             }[x],
         )
-        rec_search = st.text_input("행정동 검색", placeholder="예: 강남...")
+        all_dongs = sorted(df_dong["dong_name"].unique())
+        rec_search = st.selectbox("🏙️ 행정동 선택", ["전체"] + all_dongs)
 
     elif selected_tab == "🗺️ 지도":
         map_brands = st.multiselect(
@@ -400,76 +404,8 @@ if selected_tab == "📊 브랜드 개요":
     fig.update_yaxes(title="매출(억원)", **GRID_STYLE)
     st.plotly_chart(fig, use_container_width=True)
 
-    # ── 상세 분석 지표 (Advanced Metrics) ──
-    st.markdown("---")
-    st.markdown("#### 📊 상세 분석 지표")
-    
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        opp_score = sel_row.get('opportunity_score', 0)
-        st.metric("기회 지수", f"{opp_score:,.1f}", help="매장당 종사자 수. 높을수록 잠재 수요 대비 경쟁이 적음을 의미")
-    with m2:
-        pen_rate = sel_row.get('penetration_rate', 0)
-        st.metric("저가 브랜드 침투율", f"{pen_rate:.1f}%", help="전체 카페 수 대비 저가 브랜드 비중")
-    with m3:
-        peak_ratio = sel_row.get('peak_sales_ratio', 0)
-        st.metric("피크 시간 매출 비중", f"{peak_ratio:.1f}%", help="06~14시 매출이 전체에서 차지하는 비중")
-    with m4:
-        closure_rate = sel_row.get('closure_rate', 0)
-        st.metric("폐업률", f"{closure_rate:.1f}%", help="해당 지역 카페들의 전체 대비 폐업 매장 비율")
 
-    m5, m6, m7, m8 = st.columns(4)
-    with m5:
-        weekday_ratio = sel_row.get('weekday_sales_ratio', 0)
-        st.metric("주중 매출 비중", f"{weekday_ratio:.1f}%")
-    with m6:
-        avg_op = sel_row.get('avg_op_days', 0) / 365
-        st.metric("평균 영업 기간", f"{avg_op:.1f}년")
-    with m7:
-        comp_intensity = sel_row.get('competition_intensity', 0)
-        st.metric("경쟁 강도", f"{comp_intensity:.1f}", help="종사자 100명당 카페 수")
-    with m8:
-        total_workers = sel_row.get('total_workers', 0)
-        st.metric("총 종사자 수", f"{total_workers:,.0f}명")
 
-    # ── 점수 계산 방법 설명 ──
-    st.markdown("---")
-    st.markdown("#### 📐 평가 지수 계산 방법")
-    st.caption("서울 행정동별 데이터를 **Min-Max 정규화(0~1)** 한 후, 수요 · 경쟁 · 비용 점수를 가중 합산하여 종합 매력도 지수를 산출합니다.")
-
-    sc1, sc2, sc3, sc4 = st.columns(4)
-    with sc1:
-        st.markdown("""
-        <div class="stp-card" style="--stp-color:#4ECDC4">
-          <div class="stp-name" style="color:#4ECDC4">📈 수요 점수</div>
-          <div class="stp-formula">(정규화_매출 × 0.5\n+ 정규화_종사자 × 0.5)\n× 100</div>
-          <div class="stp-note">월매출 + 종사자수를 동등 반영. 높을수록 ↑</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with sc2:
-        st.markdown("""
-        <div class="stp-card" style="--stp-color:#FFE66D">
-          <div class="stp-name" style="color:#FFE66D">⚔️ 경쟁 점수</div>
-          <div class="stp-formula">(1 − 정규화_카페수)\n× 100</div>
-          <div class="stp-note">카페 수 적을수록 ↑ (반비례)</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with sc3:
-        st.markdown("""
-        <div class="stp-card" style="--stp-color:#A8E6CF">
-          <div class="stp-name" style="color:#A8E6CF">💰 비용 점수</div>
-          <div class="stp-formula">(1 − 정규화_부동산가)\n× 100</div>
-          <div class="stp-note">m² 당 부동산가 낮을수록 ↑ (반비례)</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with sc4:
-        st.markdown("""
-        <div class="stp-card" style="--stp-color:#58a6ff">
-          <div class="stp-name" style="color:#58a6ff">⭐ 종합 매력도</div>
-          <div class="stp-formula">수요 × 0.4\n+ 경쟁 × 0.3\n+ 비용 × 0.3</div>
-          <div class="stp-note">유동인구 많고 · 경쟁 적고 · 임대료 저렴할수록 ↑</div>
-        </div>
-        """, unsafe_allow_html=True)
 
 
 
@@ -526,7 +462,7 @@ elif selected_tab == "🗺️ 지도":
             layers=[layer],
             initial_view_state=view,
             tooltip=tooltip,
-            map_style="mapbox://styles/mapbox/light-v10" if is_light else "mapbox://styles/mapbox/dark-v10",
+            map_style="light" if is_light else "dark",
         ))
 
         # 브랜드별 매장 수 요약
@@ -535,13 +471,14 @@ elif selected_tab == "🗺️ 지도":
         brand_counts = filtered_map["brand"].value_counts()
         for i, brand in enumerate(map_brands):
             cnt = brand_counts.get(brand, 0)
-            color = BRAND_COLORS[brand]
+            color = ADJUSTED_BRAND_COLORS[brand]
             with summary_cols[i]:
                 st.markdown(f"""
-                <div style="text-align:center;padding:10px;background:#161b22;
-                     border:1px solid #30363d;border-radius:8px;border-top:3px solid {color}">
-                  <div style="color:{color};font-weight:700;font-size:.9rem">{brand}</div>
-                  <div style="font-size:1.4rem;font-weight:900">{cnt}</div>
+                <div style="text-align:center;padding:12px;background:{THEME['surface']};
+                     border:1px solid {THEME['border']};border-radius:10px;border-top:3px solid {color};
+                     box-shadow:0 2px 6px {THEME['shadow']}">
+                  <div style="color:{color};font-weight:700;font-size:1rem">{brand}</div>
+                  <div style="font-size:1.6rem;font-weight:900;color:{THEME['text']}">{cnt}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -553,8 +490,8 @@ elif selected_tab == "🏙️ 행정동 분석":
 
     # 필터 적용
     df_view = df_dong.copy()
-    if dong_search:
-        df_view = df_view[df_view["dong_name"].str.contains(dong_search)]
+    if dong_search != "전체":
+        df_view = df_view[df_view["dong_name"] == dong_search]
     if brand_filter != "전체":
         col = f"cnt_{brand_filter}"
         if col in df_view.columns:
@@ -627,13 +564,13 @@ elif selected_tab == "🏙️ 행정동 분석":
             for brand in BRANDS:
                 col = f"cnt_{brand}"
                 cnt = int(d.get(col, 0))
-                color = BRAND_COLORS[brand]
+                color = ADJUSTED_BRAND_COLORS[brand]
                 bar_w = min(cnt * 20, 100)
                 st.markdown(f"""
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-                  <span style="color:{color};font-size:.8rem;width:80px">{brand}</span>
+                  <span style="color:{color};font-size:.8rem;width:80px;font-weight:700">{brand}</span>
                   <div style="background:{color};height:8px;width:{bar_w}px;border-radius:4px"></div>
-                  <span style="font-size:.8rem">{cnt}</span>
+                  <span style="font-size:.8rem;color:{THEME['text']}">{cnt}</span>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -649,6 +586,77 @@ elif selected_tab == "🏙️ 행정동 분석":
             fig.update_xaxes(**GRID_STYLE)
             fig.update_yaxes(title="백만원", **GRID_STYLE)
             st.plotly_chart(fig, use_container_width=True)
+
+            # ── 상세 분석 지표 (Advanced Metrics) ──
+            st.markdown("---")
+            st.markdown("#### 📊 상세 분석 지표")
+            
+            m1, m2, m3, m4 = st.columns(4)
+            with m1:
+                opp_score = d.get('opportunity_score', 0)
+                st.metric("기회 지수", f"{opp_score:,.1f}", help="매장당 종사자 수. 높을수록 잠재 수요 대비 경쟁이 적음을 의미")
+            with m2:
+                pen_rate = d.get('penetration_rate', 0)
+                st.metric("저가 브랜드 침투율", f"{pen_rate:.1f}%", help="전체 카페 수 대비 저가 브랜드 비중")
+            with m3:
+                peak_ratio = d.get('peak_sales_ratio', 0)
+                st.metric("피크 시간 매출 비중", f"{peak_ratio:.1f}%", help="06~14시 매출이 전체에서 차지하는 비중")
+            with m4:
+                closure_rate = d.get('closure_rate', 0)
+                st.metric("폐업률", f"{closure_rate:.1f}%", help="해당 지역 카페들의 전체 대비 폐업 매장 비율")
+            
+            m5, m6, m7, m8 = st.columns(4)
+            with m5:
+                weekday_ratio = d.get('weekday_sales_ratio', 0)
+                st.metric("주중 매출 비중", f"{weekday_ratio:.1f}%")
+            with m6:
+                avg_op = d.get('avg_op_days', 0) / 365
+                st.metric("평균 영업 기간", f"{avg_op:.1f}년")
+            with m7:
+                comp_intensity = d.get('competition_intensity', 0)
+                st.metric("경쟁 강도", f"{comp_intensity:.1f}", help="종사자 100명당 카페 수")
+            with m8:
+                total_workers_val = d.get('total_workers', 0)
+                st.metric("총 종사자 수", f"{total_workers_val:,.0f}명")
+
+            # ── 점수 계산 방법 설명 ──
+            st.markdown("---")
+            st.markdown("#### 📐 가중치 및 평가 지수")
+            st.caption("서울 행정동별 데이터를 **Min-Max 정규화(0~1)** 한 후 가중 합산한 결과입니다.")
+            
+            sc1, sc2, sc3, sc4 = st.columns(4)
+            with sc1:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#4ECDC4">
+                  <div class="stp-name" style="color:#4ECDC4">📈 수요 점수</div>
+                  <div class="stp-formula">(정규화_매출 × 0.5\\n+ 정규화_종사자 × 0.5)\\n× 100</div>
+                  <div class="stp-note">월매출 + 종사자수를 동등 반영. 높을수록 ↑</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sc2:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#FFE66D">
+                  <div class="stp-name" style="color:#FFE66D">⚔️ 경쟁 점수</div>
+                  <div class="stp-formula">(1 − 정규화_카페수)\\n× 100</div>
+                  <div class="stp-note">카페 수 적을수록 ↑ (반비례)</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sc3:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#A8E6CF">
+                  <div class="stp-name" style="color:#A8E6CF">💰 비용 점수</div>
+                  <div class="stp-formula">(1 − 정규화_부동산가)\\n× 100</div>
+                  <div class="stp-note">m² 당 부동산가 낮을수록 ↑ (반비례)</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sc4:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#58a6ff">
+                  <div class="stp-name" style="color:#58a6ff">⭐ 종합 매력도</div>
+                  <div class="stp-formula">수요 × 0.4\\n+ 경쟁 × 0.3\\n+ 비용 × 0.3</div>
+                  <div class="stp-note">유동인구 많고 · 경쟁 적고 · 임대료 저렴할수록 ↑</div>
+                </div>
+                """, unsafe_allow_html=True)
         else:
             st.info("👆 테이블에서 행을 클릭하면 상세 정보가 표시됩니다.")
 
@@ -662,7 +670,7 @@ elif selected_tab == "⭐ 입지 추천":
     df_r = df_rec.copy()
     if rec_brand != "전체":
         df_r = df_r[df_r["brand"] == rec_brand]
-    if rec_search:
+    if rec_search != "전체":
         df_r = df_r[df_r["dong_name"].str.contains(rec_search)]
     df_r = df_r.sort_values(rec_sort, ascending=False).head(60)
 
@@ -683,43 +691,43 @@ elif selected_tab == "⭐ 입지 추천":
 
                 with cols[ci]:
                     st.markdown(f"""
-                    <div style="background:{THEME['surface']};border:1px solid {THEME['border']};border-radius:10px;
-                         padding:16px;border-top:3px solid {color};margin-bottom:12px;box-shadow: 0 4px 6px {THEME['shadow']}">
-                      <div style="font-size:.7rem;color:{THEME['text_sub']} font-weight:600">#{row_start+ci+1} 추천</div>
-                      <div style="font-size:1rem;font-weight:800;margin:4px 0;color:{THEME['text']}">{r['dong_name']}</div>
-                      <span style="background:{color}20;color:{ADJUSTED_BRAND_COLORS.get(r['brand'], color)};padding:2px 8px;
-                            border-radius:10px;font-size:.75rem;font-weight:700">{r['brand']}</span>
-                      <span style="font-size:.72rem;color:{THEME['text_sub']};margin-left:6px;font-weight:500">미진출 지역</span>
-                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px">
-                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
-                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">매력도</div>
-                          <div style="font-size:1.1rem;font-weight:800;color:{score_color}">
+                    <div style="background:{THEME['surface']};border:1px solid {THEME['border']};border-radius:12px;
+                         padding:18px;border-top:4px solid {color};margin-bottom:14px;box-shadow: 0 4px 10px {THEME['shadow']}">
+                      <div style="font-size:.75rem;color:{THEME['text_sub']};font-weight:700">#{row_start+ci+1} 추천</div>
+                      <div style="font-size:1.1rem;font-weight:800;margin:6px 0;color:{THEME['text']}">{r['dong_name']}</div>
+                      <span style="background:{color}15;color:{ADJUSTED_BRAND_COLORS.get(r['brand'], color)};padding:3px 10px;
+                            border-radius:12px;font-size:.78rem;font-weight:800;border:1px solid {color}30">{r['brand']}</span>
+                      <span style="font-size:.75rem;color:{THEME['text_sub']};margin-left:8px;font-weight:600">미진출 지역</span>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
+                        <div style="background:{THEME['surface2']};border-radius:8px;padding:10px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.68rem;color:{THEME['text_sub']};font-weight:700">매력도</div>
+                          <div style="font-size:1.2rem;font-weight:900;color:{score_color}">
                             {f"{score:.1f}" if score else "-"}
                           </div>
                         </div>
-                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
-                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">수요</div>
-                          <div style="font-size:1.1rem;font-weight:800;color:#09a39a">
+                        <div style="background:{THEME['surface2']};border-radius:8px;padding:10px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.68rem;color:{THEME['text_sub']};font-weight:700">수요</div>
+                          <div style="font-size:1.2rem;font-weight:900;color:#00897b">
                             {f"{r['demand_score']:.1f}" if r.get('demand_score') else "-"}
                           </div>
                         </div>
-                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
-                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">경쟁</div>
-                          <div style="font-size:1.1rem;font-weight:800;color:#b18e00">
+                        <div style="background:{THEME['surface2']};border-radius:8px;padding:10px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.68rem;color:{THEME['text_sub']};font-weight:700">경쟁</div>
+                          <div style="font-size:1.2rem;font-weight:900;color:#f57f17">
                             {f"{r['competition_score']:.1f}" if r.get('competition_score') else "-"}
                           </div>
                         </div>
-                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
-                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">비용</div>
-                          <div style="font-size:1.1rem;font-weight:800;color:#2e8b57">
+                        <div style="background:{THEME['surface2']};border-radius:8px;padding:10px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.68rem;color:{THEME['text_sub']};font-weight:700">비용</div>
+                          <div style="font-size:1.2rem;font-weight:900;color:#2e7d32">
                             {f"{r['cost_score']:.1f}" if r.get('cost_score') else "-"}
                           </div>
                         </div>
                       </div>
-                      <div style="font-size:.75rem;color:{THEME['text']};margin-top:10px;font-weight:600">
+                      <div style="font-size:.8rem;color:{THEME['text']};margin-top:12px;font-weight:700;border-top:1px solid {THEME['border']};padding-top:8px">
                         근로자 {int(r.get('total_workers',0)):,}명 · 
-                        카페 {int(r.get('cafe_count',0))}개 · 
-                        월매출 {r.get('monthly_sales',0)/1e8:.1f}억
+                        카페 {int(r.get('cafe_count',0))}개 <br>
+                        월평균 매출 <span style="color:#005cc5">{r.get('monthly_sales',0)/1e8:.1f}억 원</span>
                       </div>
                     </div>
                     """, unsafe_allow_html=True)
