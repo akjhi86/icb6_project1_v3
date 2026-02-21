@@ -237,7 +237,7 @@ with st.sidebar:
     st.markdown("### 🔍 필터")
     selected_tab = st.radio(
         "분석 메뉴",
-        ["📊 브랜드 개요", "🗺️ 지도", "🏙️ 행정동 분석", "⭐ 입지 추천"],
+        ["📊 브랜드 개요", "🗺️ 지도", "🏙️ 행정동 분석", "📈 행정동분석_차트", "⭐ 입지 추천"],
         label_visibility="collapsed",
     )
     st.divider()
@@ -651,14 +651,198 @@ elif selected_tab == "🏙️ 행정동 분석":
                 """, unsafe_allow_html=True)
             with sc4:
                 st.markdown(f"""
-                <div class="stp-card" style="--stp-color:#58a6ff">
-                  <div class="stp-name" style="color:#58a6ff">⭐ 종합 매력도</div>
+                <div class="stp-card" style="--stp-color:{THEME['accent']}">
+                  <div class="stp-name" style="color:{THEME['accent']}">⭐ 종합 매력도</div>
                   <div class="stp-formula">수요 × 0.4\\n+ 경쟁 × 0.3\\n+ 비용 × 0.3</div>
                   <div class="stp-note">유동인구 많고 · 경쟁 적고 · 임대료 저렴할수록 ↑</div>
                 </div>
                 """, unsafe_allow_html=True)
+
+            sc5, sc6, sc7, sc8 = st.columns(4)
+            with sc5:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#FF6B6B">
+                  <div class="stp-name" style="color:#FF6B6B">🎯 기회 지수</div>
+                  <div class="stp-formula">총 종사자 수\\n÷ 저가 커피 매장 수</div>
+                  <div class="stp-note">잠재 고객 대비 경쟁 정도. 높을수록 유리</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sc6:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#bc8cff">
+                  <div class="stp-name" style="color:#bc8cff">📉 브랜드 침투율</div>
+                  <div class="stp-formula">(저가 브랜드 수\\n÷ 전체 카페 수) × 100</div>
+                  <div class="stp-note">저가 브랜드의 시장 점유율 (%)</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sc7:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#FF9F43">
+                  <div class="stp-name" style="color:#FF9F43">⏰ 피크 매출 비중</div>
+                  <div class="stp-formula">(06~14시 매출\\n÷ 총 매출) × 100</div>
+                  <div class="stp-note">출근/점심 시간대 수요 집중도 (%)</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sc8:
+                st.markdown(f"""
+                <div class="stp-card" style="--stp-color:#10AC84">
+                  <div class="stp-name" style="color:#10AC84">⚠️ 폐업률</div>
+                  <div class="stp-formula">(폐업 매장 수\\n÷ 전체 매장 수) × 100</div>
+                  <div class="stp-note">지역 내 카페의 생존 안정성 (%)</div>
+                </div>
+                """, unsafe_allow_html=True)
         else:
             st.info("👆 테이블에서 행을 클릭하면 상세 정보가 표시됩니다.")
+
+
+# ══════════════════════════════════════════════
+# 탭 3.5: 행정동분석_차트
+# ══════════════════════════════════════════════
+elif selected_tab == "📈 행정동분석_차트":
+    st.markdown("##### 📈 행정동 상위 지표 시각화 (Top 10)")
+    st.caption("주요 지표별 상위 10개 행정동을 한눈에 비교할 수 있습니다.")
+
+    # 1. 월 평균 매출 & 2. 총 종사자 수
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("###### 1. 월 평균 매출 Top 10 (억원)")
+        top_sales = df_dong.nlargest(10, 'monthly_sales').copy()
+        top_sales['monthly_sales_cr'] = top_sales['monthly_sales'] / 1e8
+        fig = px.bar(top_sales, x='dong_name', y='monthly_sales_cr',
+                     color='monthly_sales_cr', color_continuous_scale='Reds',
+                     text_auto='.1f')
+        fig.update_layout(**PLOT_LAYOUT, height=300, showlegend=False, coloraxis_showscale=False)
+        fig.update_traces(textposition='outside')
+        fig.update_xaxes(title=None, **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+    with c2:
+        st.markdown("###### 2. 총 종사자 수 Top 10 (명)")
+        top_work = df_dong.nlargest(10, 'total_workers')
+        fig = px.bar(top_work, x='dong_name', y='total_workers',
+                     color='total_workers', color_continuous_scale='Purples',
+                     text_auto=',.0f')
+        fig.update_layout(**PLOT_LAYOUT, height=300, showlegend=False, coloraxis_showscale=False)
+        fig.update_traces(textposition='outside')
+        fig.update_xaxes(title=None, **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # 3. 저가 브랜드 침투율 & 4. 피크 시간 매출 비중
+    c3, c4 = st.columns(2)
+    with c3:
+        st.markdown("###### 3. 저가 브랜드 침투율 Top 10 (%)")
+        top_pen = df_dong.nlargest(10, 'penetration_rate')
+        fig = px.bar(top_pen, x='dong_name', y='penetration_rate',
+                     color='penetration_rate', color_continuous_scale='Teal',
+                     text_auto='.1f')
+        fig.update_layout(**PLOT_LAYOUT, height=300, showlegend=False, coloraxis_showscale=False)
+        fig.update_traces(textposition='outside')
+        fig.update_xaxes(title=None, **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+    with c4:
+        st.markdown("###### 4. 피크 시간 매출 비중 Top 10 (%)")
+        top_peak = df_dong.nlargest(10, 'peak_sales_ratio')
+        fig = px.bar(top_peak, x='dong_name', y='peak_sales_ratio',
+                     color='peak_sales_ratio', color_continuous_scale='Oranges',
+                     text_auto='.1f')
+        fig.update_layout(**PLOT_LAYOUT, height=300, showlegend=False, coloraxis_showscale=False)
+        fig.update_traces(textposition='outside')
+        fig.update_xaxes(title=None, **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # 5. 안정성 (최저 폐업률) & 6. 종사자 수 vs 매출 상관관계
+    c5, c6 = st.columns(2)
+    with c5:
+        st.markdown("###### 5. 안정성(최저 폐업률) Top 10 (%)")
+        low_closure = df_dong[df_dong['closure_rate'] > 0].nsmallest(10, 'closure_rate')
+        fig = px.bar(low_closure, x='dong_name', y='closure_rate',
+                     color='closure_rate', color_continuous_scale='Greens_r',
+                     text_auto='.1f')
+        fig.update_layout(**PLOT_LAYOUT, height=300, showlegend=False, coloraxis_showscale=False)
+        fig.update_traces(textposition='outside')
+        fig.update_xaxes(title=None, **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+    with c6:
+        st.markdown("###### 6. 종사자 수 vs 월 매출 상관관계 (억)")
+        corr_df = df_dong.copy()
+        corr_df['sales_cr'] = corr_df['monthly_sales'] / 1e8
+        fig = px.scatter(corr_df, x='total_workers', y='sales_cr', 
+                         hover_name='dong_name', color='attractiveness_score',
+                         size='total_brand_count', opacity=0.6)
+        fig.update_layout(**PLOT_LAYOUT, height=300)
+        fig.update_xaxes(title="총 종사자 수", **GRID_STYLE)
+        fig.update_yaxes(title="월 매출", **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # 7. 평균 영업 기간 & 8. 상위 지역 브랜드 점유율
+    c7, c8 = st.columns(2)
+    with c7:
+        st.markdown("###### 7. 평균 영업 기간 Top 10 (년)")
+        top_op = df_dong.nlargest(10, 'avg_op_days').copy()
+        top_op['avg_op_years'] = top_op['avg_op_days'] / 365
+        fig = px.bar(top_op, x='dong_name', y='avg_op_years',
+                     color='avg_op_years', color_continuous_scale='Viridis',
+                     text_auto='.1f')
+        fig.update_layout(**PLOT_LAYOUT, height=300, showlegend=False, coloraxis_showscale=False)
+        fig.update_traces(textposition='outside')
+        fig.update_xaxes(title=None, **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+    with c8:
+        st.markdown("###### 8. 상위 20개 동 브랜드 시장 점유율")
+        top_20 = df_dong.nlargest(20, 'total_brand_count')
+        brand_data = []
+        for brand in BRANDS:
+            brand_data.append(go.Bar(name=brand, x=top_20['dong_name'], y=top_20[f'cnt_{brand}'], marker_color=BRAND_COLORS[brand]))
+        fig = go.Figure(data=brand_data)
+        fig.update_layout(**PLOT_LAYOUT, barmode='stack', height=300, showlegend=False)
+        fig.update_traces(texttemplate='%{y}', textposition='inside')
+        fig.update_xaxes(tickangle=-45, **GRID_STYLE)
+        st.plotly_chart(fig, use_container_width=True)
+
+
+    # ──────────────────────────────────────────────
+    # 📊 심층 분포 및 상관관계 분석 (Box, Scatter, Hexbin)
+    # ──────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("##### 🔍 심층 분포 및 상관관계 분석")
+    st.caption("전체 행정동 데이터의 분포와 밀도를 다각도에서 분석합니다.")
+
+    c9, c10 = st.columns(2)
+    with c9:
+        st.markdown("###### 9. 주요 지표 데이터 분포 (Box Plot)")
+        box_df = df_dong.copy()
+        box_df['월 매출(억)'] = box_df['monthly_sales'] / 1e8
+        box_df = box_df.rename(columns={'attractiveness_score': '종합 매력도', 'opportunity_score': '기회 지수'})
+        melt_df = box_df.melt(value_vars=['종합 매력도', '기회 지수', '월 매출(억)'], 
+                              var_name='지표', value_name='값')
+        fig = px.box(melt_df, x='지표', y='값', color='지표', points="all")
+        fig.update_layout(**PLOT_LAYOUT, height=400, showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
+
+    with c10:
+        st.markdown("###### 10. 데이터 밀도 분석 (Hexbin / Density Heatmap)")
+        dens_df = df_dong.copy()
+        dens_df['sales_cr'] = dens_df['monthly_sales'] / 1e8
+        fig = px.density_heatmap(dens_df, x='total_workers', y='sales_cr', 
+                                 nbinsx=30, nbinsy=30, color_continuous_scale='Viridis',
+                                 labels={'total_workers': '총 종사자 수', 'sales_cr': '월 매출(억)'},
+                                 text_auto=True)
+        fig.update_layout(**PLOT_LAYOUT, height=400, coloraxis_showscale=True)
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("###### 11. 변수 간 상관관계 분석 (Scatter with Marginals)")
+    scat_df = df_dong.copy()
+    scat_df['sales_cr'] = scat_df['monthly_sales'] / 1e8
+    fig = px.scatter(scat_df, x='cafe_count', y='sales_cr', 
+                     marginal_x="box", marginal_y="violin",
+                     hover_name='dong_name', color='attractiveness_score',
+                     labels={'cafe_count': '행정동별 전체 카페 수', 'sales_cr': '월 매출(억)'},
+                     opacity=0.7)
+    fig.update_layout(**PLOT_LAYOUT, height=500)
+    st.plotly_chart(fig, use_container_width=True)
 
 
 # ══════════════════════════════════════════════
