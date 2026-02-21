@@ -82,16 +82,16 @@ with st.sidebar:
 
 is_light = (theme_mode == "Light")
 
-# 테마별 색상 정의
+# 테마별 색상定義
 THEME = {
-    "bg": "#f6f8fa" if is_light else "#0d1117",
+    "bg": "#f0f2f5" if is_light else "#0d1117",
     "surface": "#ffffff" if is_light else "#161b22",
-    "surface2": "#f3f4f6" if is_light else "#21262d",
+    "surface2": "#ffffff" if is_light else "#21262d",
     "border": "#d0d7de" if is_light else "#30363d",
-    "text": "#1f2328" if is_light else "#e6edf3",
-    "text_sub": "#656d76" if is_light else "#8b949e",
-    "accent": "#0969da" if is_light else "#58a6ff",
-    "shadow": "rgba(31, 35, 40, 0.08)" if is_light else "rgba(0, 0, 0, 0.4)",
+    "text": "#111418" if is_light else "#e6edf3",
+    "text_sub": "#424a53" if is_light else "#8b949e",
+    "accent": "#005cc5" if is_light else "#58a6ff",
+    "shadow": "rgba(0, 0, 0, 0.05)" if is_light else "rgba(0, 0, 0, 0.4)",
 }
 
 # 라이트 모드에서 형광색 시인성 확보를 위한 브랜드 색상 조정
@@ -182,11 +182,17 @@ h1, h2, h3, h4, h5, h6, p, span, label, div {{ color: {THEME["text"]}; }}
 .stp-note {{ font-size: .68rem; color: {THEME["text_sub"]}; line-height: 1.5; }}
 
 /* 지도 툴팁 스타일 수정 */
-.deckgl-tooltip {{
+.deckgl-tooltip {
     background: {THEME["surface"]} !important;
     color: {THEME["text"]} !important;
     border: 1px solid {THEME["border"]} !important;
-}}
+    font-weight: 500;
+}
+
+/* 탭 바 텍스트 강화 */
+[data-testid="stMarkdownContainer"] p {
+    font-weight: 500;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -646,40 +652,40 @@ elif selected_tab == "⭐ 입지 추천":
 
                 with cols[ci]:
                     st.markdown(f"""
-                    <div style="background:#161b22;border:1px solid #30363d;border-radius:10px;
-                         padding:16px;border-top:3px solid {color};margin-bottom:12px">
-                      <div style="font-size:.7rem;color:#8b949e">#{row_start+ci+1} 추천</div>
-                      <div style="font-size:1rem;font-weight:700;margin:4px 0">{r['dong_name']}</div>
-                      <span style="background:{color}25;color:{color};padding:2px 8px;
-                            border-radius:10px;font-size:.75rem;font-weight:600">{r['brand']}</span>
-                      <span style="font-size:.72rem;color:#8b949e;margin-left:6px">미진출 지역</span>
+                    <div style="background:{THEME['surface']};border:1px solid {THEME['border']};border-radius:10px;
+                         padding:16px;border-top:3px solid {color};margin-bottom:12px;box-shadow: 0 4px 6px {THEME['shadow']}">
+                      <div style="font-size:.7rem;color:{THEME['text_sub']} font-weight:600">#{row_start+ci+1} 추천</div>
+                      <div style="font-size:1rem;font-weight:800;margin:4px 0;color:{THEME['text']}">{r['dong_name']}</div>
+                      <span style="background:{color}20;color:{ADJUSTED_BRAND_COLORS.get(r['brand'], color)};padding:2px 8px;
+                            border-radius:10px;font-size:.75rem;font-weight:700">{r['brand']}</span>
+                      <span style="font-size:.72rem;color:{THEME['text_sub']};margin-left:6px;font-weight:500">미진출 지역</span>
                       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px">
-                        <div style="background:#21262d;border-radius:6px;padding:8px">
-                          <div style="font-size:.65rem;color:#8b949e">매력도</div>
-                          <div style="font-size:1.1rem;font-weight:700;color:{score_color}">
+                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">매력도</div>
+                          <div style="font-size:1.1rem;font-weight:800;color:{score_color}">
                             {f"{score:.1f}" if score else "-"}
                           </div>
                         </div>
-                        <div style="background:#21262d;border-radius:6px;padding:8px">
-                          <div style="font-size:.65rem;color:#8b949e">수요</div>
-                          <div style="font-size:1.1rem;font-weight:700;color:#4ECDC4">
+                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">수요</div>
+                          <div style="font-size:1.1rem;font-weight:800;color:#09a39a">
                             {f"{r['demand_score']:.1f}" if r.get('demand_score') else "-"}
                           </div>
                         </div>
-                        <div style="background:#21262d;border-radius:6px;padding:8px">
-                          <div style="font-size:.65rem;color:#8b949e">경쟁</div>
-                          <div style="font-size:1.1rem;font-weight:700;color:#FFE66D">
+                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">경쟁</div>
+                          <div style="font-size:1.1rem;font-weight:800;color:#b18e00">
                             {f"{r['competition_score']:.1f}" if r.get('competition_score') else "-"}
                           </div>
                         </div>
-                        <div style="background:#21262d;border-radius:6px;padding:8px">
-                          <div style="font-size:.65rem;color:#8b949e">비용</div>
-                          <div style="font-size:1.1rem;font-weight:700;color:#A8E6CF">
+                        <div style="background:{THEME['bg']};border-radius:6px;padding:8px;border:1px solid {THEME['border']}">
+                          <div style="font-size:.65rem;color:{THEME['text_sub']};font-weight:600">비용</div>
+                          <div style="font-size:1.1rem;font-weight:800;color:#2e8b57">
                             {f"{r['cost_score']:.1f}" if r.get('cost_score') else "-"}
                           </div>
                         </div>
                       </div>
-                      <div style="font-size:.72rem;color:#8b949e;margin-top:8px">
+                      <div style="font-size:.75rem;color:{THEME['text']};margin-top:10px;font-weight:600">
                         근로자 {int(r.get('total_workers',0)):,}명 · 
                         카페 {int(r.get('cafe_count',0))}개 · 
                         월매출 {r.get('monthly_sales',0)/1e8:.1f}억
